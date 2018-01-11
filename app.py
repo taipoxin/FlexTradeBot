@@ -95,7 +95,17 @@ def setup(webhook_url=None):
         dp = updater.dispatcher
         dp.add_handler(CommandHandler("start", start))
         dp.add_handler(CommandHandler("help", help))
+
+        #Yobit
         dp.add_handler(CommandHandler("trx_usd", trx_usd))
+        dp.add_handler(CommandHandler("bcc_usd", bcc_usd))
+        dp.add_handler(CommandHandler("xem_usd", xem_usd))
+        dp.add_handler(CommandHandler("zec_usd", zec_usd))
+        dp.add_handler(CommandHandler("eth_usd", eth_usd))
+
+        #Binance
+        dp.add_handler(CommandHandler("btc_usdt", btc_usdt))
+
 
 
         # on noncommand i.e message - echo the message on Telegram
