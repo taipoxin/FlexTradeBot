@@ -14,19 +14,34 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 logger = logging.getLogger(__name__)
 TOKEN = os.environ.get('API_KEY')
 
-yobitHeadUri = 'https://yobit.net/api/2/'
-yobitTailUrl = '/ticker'
-
 
 def start(bot, update):
-    update.message.reply_text('welcome MESSAGE')
-
+    update.message.reply_text('Привет, это криптовалютный бот!\nПолучить список команд: /help')
 
 def help(bot, update):
-    update.message.reply_text('help message')
+    update.message.reply_text('Yobit.net:\n\n/trx_usd\n/bcc_usd\n/xem_usd\n/zec_isd\n/eth_usd\n\nBinance: /btc_usdt')
 
-def trx_usd(bot, update):
-    pair = 'trx_usd'
+
+def binanceGetPair(pair, bot, update):
+    binHeadUri = 'https://api.binance.com/api/v1/ticker/price?symbol='
+    url = binHeadUri + pair
+    pairData = requests.get(url)
+    try:
+        res_obj = json.loads(pairData.text)
+        price = res_obj['price']
+        update.message.reply_text(pair + ': ' + str(price))
+    except ValueError:
+        update.message.reply_text('something wrong')
+
+
+def btc_usdt(bot, update):
+    binanceGetPair('BTCUSDT', bot, update)
+
+
+
+def yobitGetPair(pair, bot, update):
+    yobitHeadUri = 'https://yobit.net/api/2/'
+    yobitTailUrl = '/ticker'
     url = yobitHeadUri + pair + yobitTailUrl
     pairData = requests.get(url)
     try:
@@ -36,6 +51,24 @@ def trx_usd(bot, update):
         update.message.reply_text(pair + ': ' + 'buy: ' + str(buy) + ' sell: ' + str(sell))
     except ValueError:
         update.message.reply_text('something wrong')
+
+
+
+def trx_usd(bot, update):
+    yobitGetPair('trx_usd', bot, update)
+
+def bcc_usd(bot, update):
+    yobitGetPair('bcc_usd', bot, update)
+
+def xem_usd(bot, update):
+    yobitGetPair('xem_usd', bot, update)
+
+def zec_usd(bot, update):
+    yobitGetPair('zec_usd', bot, update)
+
+def eth_usd(bot, update):
+    yobitGetPair('eth_usd', bot, update)
+
 
 
 
@@ -64,10 +97,9 @@ def setup(webhook_url=None):
         dp.add_handler(CommandHandler("help", help))
         dp.add_handler(CommandHandler("trx_usd", trx_usd))
 
-        dp.add_handler(MessageHandler("trx_usd", trx_usd))
 
         # on noncommand i.e message - echo the message on Telegram
-        dp.add_handler(MessageHandler(Filters.text, echo))
+        #dp.add_handler(MessageHandler(Filters.text, echo))
 
         # log all errors
         dp.add_error_handler(error)
