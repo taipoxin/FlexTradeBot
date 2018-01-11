@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 import os
 import logging
+import json
+import requests
 from queue import Queue
 from threading import Thread
 from telegram import Bot
@@ -12,6 +14,9 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 logger = logging.getLogger(__name__)
 TOKEN = os.environ.get('API_KEY')
 
+yobitHeadUri = 'https://yobit.net/api/2/'
+yobitTailUrl = '/ticker'
+
 
 def start(bot, update):
     update.message.reply_text('welcome MESSAGE')
@@ -19,6 +24,19 @@ def start(bot, update):
 
 def help(bot, update):
     update.message.reply_text('help message')
+
+def trx_usd(bot, update):
+    pair = 'trx_usd'
+    url = yobitHeadUri + pair + yobitTailUrl
+    pairData = requests.get(url)
+    try:
+        res_obj = json.loads(pairData.text)
+        buy = res_obj['ticker']['buy']
+        sell = res_obj['ticker']['sell']
+        update.message.reply_text(pair + ': ' + 'buy: ' + str(buy) + ' sell: ' + str(sell))
+    except ValueError:
+        update.message.reply_text('something wrong')
+
 
 
 def echo(bot, update):
